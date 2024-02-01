@@ -4,7 +4,6 @@ import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
 
 public class AnimatedPane extends BorderPane {
     public enum MoveDirection {
@@ -25,18 +24,15 @@ public class AnimatedPane extends BorderPane {
      * Need a parent for an
      */
     public AnimatedPane() {
-
         for (int i = 0; i < transition.length; i++) {
             transition[i] = new TranslateTransition(AnimationUtil.getAnimationLength(), this);
+        }
+        for (MoveDirection md : MoveDirection.values()) {
+            transition[md.indexs[0]].setFromX(0);
+            transition[md.indexs[1]].setToX(0);
+            transition[md.indexs[0]].setFromY(0);
+            transition[md.indexs[1]].setToY(0);
 
-            if (i % 2 != 0) {
-                transition[i].setToX(0);
-                transition[i].setToY(0);
-            } else {
-                transition[i].setFromX(0);
-                transition[i].setFromY(0);
-
-            }
         }
     }
 
@@ -46,33 +42,36 @@ public class AnimatedPane extends BorderPane {
             public void run() {
                 try {
                     Thread.sleep((long) AnimationUtil.getAnimationLength().toMillis());
-                    Platform.runLater(() -> transition[d.indexs[1]].play());
+
+                    Platform.runLater(() -> {
+                        setCenter(node);
+                        transition[d.indexs[1]].play();
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
+
         }.start();
         ;
     }
 
-    private double[] getParentSize() {
-
-        double[] sz = new double[2];
-        if (getParent() != null) {
-            Region r = (Region) getParent();
-            sz[0] = r.getWidth();
-            sz[1] = r.getHeight();
-        } else {
-            sz[0] = getWidth();
-            sz[1] = getHeight();
-        }
-        return sz;
-    }
-x
     public void update(double width, double height) {
-        double[] whs = getParentSize();
-        double pwidth = whs[0], pheight = whs[1];
+        transition[MoveDirection.MD_LEFT_TO_RIGHT.indexs[0]].setToX(width);
 
+        transition[MoveDirection.MD_LEFT_TO_RIGHT.indexs[1]].setFromX(-getLayoutX() - getWidth());
+
+        transition[MoveDirection.MD_RIGHT_TO_LEFT.indexs[0]].setToX(-getLayoutX() - getWidth());
+
+        transition[MoveDirection.MD_RIGHT_TO_LEFT.indexs[1]].setFromX(width);
+
+        transition[MoveDirection.MD_BOTTOM_TO_TOP.indexs[0]].setToY(-getLayoutY() - getHeight());
+
+        transition[MoveDirection.MD_BOTTOM_TO_TOP.indexs[1]].setFromY(height);
+
+        transition[MoveDirection.MD_TOP_TO_BOTTOM.indexs[0]].setToY(height);
+
+        transition[MoveDirection.MD_TOP_TO_BOTTOM.indexs[1]].setFromY(-getLayoutY() - getHeight());
     }
 
 }
