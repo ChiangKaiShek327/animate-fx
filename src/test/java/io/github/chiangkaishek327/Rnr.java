@@ -18,6 +18,22 @@ public class Rnr extends Application {
         AnimatedButton bc = new AnimatedButton();
         AnimatedButton bd = new AnimatedButton();
         AnimatedButton be = new AnimatedButton();
+        AnimatedButton bf = new AnimatedButton();
+        bf.setText("iav");
+        bf.setOnAction(e -> {
+            ap.update(ap.getWidth(), ap.getHeight());
+            ap.animatedSetVisible(false, MoveDirection.MD_BOTTOM_TO_TOP);
+            new Thread(() -> {
+                try {
+                    Thread.sleep((long) ap.getAnimationLength().toMillis());
+                    ap.animatedSetVisible(true, MoveDirection.MD_BOTTOM_TO_TOP);
+                } catch (InterruptedException e1) {
+
+                    e1.printStackTrace();
+                }
+            }).start();
+
+        });
         VBox ct = new VBox();
         bb.setText("tob");
         bc.setText("bot");
@@ -44,7 +60,7 @@ public class Rnr extends Application {
             ap.setGraphic(ct, MoveDirection.MD_RIGHT_TO_LEFT);
 
         });
-        ct.getChildren().addAll(bb, bc, bd, be);
+        ct.getChildren().addAll(bb, bc, bd, be, bf);
         ct.getChildren().forEach(e -> ((Button) e).setPrefHeight(30));
         ap.setCenter(ct);
         Scene scene = new Scene(ap);

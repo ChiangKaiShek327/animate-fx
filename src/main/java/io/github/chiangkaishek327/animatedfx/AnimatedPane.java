@@ -1,9 +1,11 @@
 package io.github.chiangkaishek327.animatedfx;
 
+import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
+import javafx.util.Duration;
 
 public class AnimatedPane extends BorderPane {
     public enum MoveDirection {
@@ -19,13 +21,12 @@ public class AnimatedPane extends BorderPane {
     }
 
     TranslateTransition[] transition = new TranslateTransition[8];
+    Duration animationLength = new Duration(100);
 
-    /**
-     * Need a parent for an
-     */
     public AnimatedPane() {
         for (int i = 0; i < transition.length; i++) {
-            transition[i] = new TranslateTransition(AnimationUtil.getAnimationLength(), this);
+            transition[i] = new TranslateTransition(animationLength, this);
+            transition[i].setInterpolator(Interpolator.EASE_BOTH);
         }
         for (MoveDirection md : MoveDirection.values()) {
             transition[md.indexs[0]].setFromX(0);
@@ -34,14 +35,20 @@ public class AnimatedPane extends BorderPane {
             transition[md.indexs[1]].setToY(0);
 
         }
+
     }
 
+    /**
+     * 
+     * @param node what need to show
+     * @param d    direction (like: MD_LEFT_TO_RIGHT)
+     */
     public void setGraphic(Node node, MoveDirection d) {
         transition[d.indexs[0]].play();
         new Thread() {
             public void run() {
                 try {
-                    Thread.sleep((long) AnimationUtil.getAnimationLength().toMillis());
+                    Thread.sleep((long) animationLength.toMillis());
 
                     Platform.runLater(() -> {
                         setCenter(node);
@@ -56,6 +63,33 @@ public class AnimatedPane extends BorderPane {
         ;
     }
 
+    public void animatedSetVisible(boolean visible, MoveDirection d) {
+
+        transition[d.indexs[visible ? 1 : 0]].play();
+        Thread ah = new Thread(() -> {
+            try {
+                if (visible) {
+                    Platform.runLater(() -> setVisible(true));
+
+                } else {
+                    Thread.sleep((long) animationLength.toMillis());
+                    Platform.runLater(() -> setVisible(false));
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        ah.start();
+
+    }
+
+    /**
+     * use this method before doing sth animated
+     * 
+     * @param width  parent width
+     * @param height parent height
+     */
     public void update(double width, double height) {
         transition[MoveDirection.MD_LEFT_TO_RIGHT.indexs[0]].setToX(width);
 
@@ -72,6 +106,14 @@ public class AnimatedPane extends BorderPane {
         transition[MoveDirection.MD_TOP_TO_BOTTOM.indexs[0]].setToY(height);
 
         transition[MoveDirection.MD_TOP_TO_BOTTOM.indexs[1]].setFromY(-getLayoutY() - getHeight());
+    }
+
+    public Duration getAnimationLength() {
+        return animationLength;
+    }
+
+    public void setAnimationLength(Duration animationLength) {
+        this.animationLength = animationLength;
     }
 
 }
