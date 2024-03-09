@@ -9,3 +9,7 @@
 .animated-tabpane .animated-tabpane-header .animated-tab {
     -fx-background-color: #0ff;
 }
+
+.animated-tabpane .animated-tabpane-header .animated-tab:selected {
+    -fx-background-color: #f00;
+}

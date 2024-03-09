@@ -43,6 +43,7 @@ public class AnimatedTabPane<K> extends BorderPane implements ResizableAnimated 
         getStyleClass().add("animated-tabpane");
         buttonBox.getStyleClass().add("animated-tabpane-header");
         setTop(buttonBox);
+
         setCenter(content);
         tabMap.addListener(new MapChangeListener<K, AnimatedTab<K>>() {
             @Override
@@ -58,6 +59,7 @@ public class AnimatedTabPane<K> extends BorderPane implements ResizableAnimated 
             }
 
         });
+
     }
 
     /**

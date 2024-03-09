@@ -12,6 +12,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.EventDispatchChain;
 import javafx.event.EventHandler;
@@ -68,6 +69,10 @@ public class AnimatedTab<K> implements EventTarget, Animated, Closeable {
             if (!selectedProperty.getValue())
                 button.getTransitions()[1].play();
         });
+        button.setOnMouseEntered(e -> {
+            if (!selectedProperty.getValue())
+                button.getTransitions()[0].play();
+        });
         closeButton.visibleProperty().bind(closeableProperty);
         closeButton.setText("X");
 
@@ -77,6 +82,9 @@ public class AnimatedTab<K> implements EventTarget, Animated, Closeable {
             close();
         });
         closeButton.setOnAction(onClosedProperty.getValue());
+        selectedProperty.addListener((ob, o, n) -> {
+            button.pseudoClassStateChanged(PseudoClass.getPseudoClass("selected"), n);
+        });
     }
 
     public AnimatedTab(K key) {
