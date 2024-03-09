@@ -1,13 +1,17 @@
 package io.github.chiangkaishek327.animatedfx;
 
 import javafx.animation.Interpolator;
+import javafx.animation.Transition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Duration;
 
-public class AnimatedPane extends BorderPane {
+public class AnimatedPane extends BorderPane implements ResizableAnimated {
     public enum MoveDirection {
         MD_LEFT_TO_RIGHT(new int[] { 0, 1 }), MD_RIGHT_TO_LEFT(new int[] { 2, 3 }),
         MD_TOP_TO_BOTTOM(new int[] { 4, 5 }), MD_BOTTOM_TO_TOP(new int[] { 6, 7 });
@@ -20,22 +24,28 @@ public class AnimatedPane extends BorderPane {
 
     }
 
-    TranslateTransition[] transition = new TranslateTransition[8];
-    Duration animationLength = new Duration(100);
+    TranslateTransition[] transitions = new TranslateTransition[8];
+    ObjectProperty<Duration> animationLengthProperty = new SimpleObjectProperty<>(new Duration(100));
+    ObjectProperty<Node> contentProperty = new SimpleObjectProperty<>();
 
     public AnimatedPane() {
-        for (int i = 0; i < transition.length; i++) {
-            transition[i] = new TranslateTransition(animationLength, this);
-            transition[i].setInterpolator(Interpolator.EASE_BOTH);
+        for (int i = 0; i < transitions.length; i++) {
+            transitions[i] = new TranslateTransition();
+            transitions[i].setNode(this);
+            transitions[i].durationProperty().bind(animationLengthProperty);
+            transitions[i].setInterpolator(Interpolator.EASE_BOTH);
         }
         for (MoveDirection md : MoveDirection.values()) {
-            transition[md.indexs[0]].setFromX(0);
-            transition[md.indexs[1]].setToX(0);
-            transition[md.indexs[0]].setFromY(0);
-            transition[md.indexs[1]].setToY(0);
+            transitions[md.indexs[0]].setFromX(0);
+            transitions[md.indexs[1]].setToX(0);
+            transitions[md.indexs[0]].setFromY(0);
+            transitions[md.indexs[1]].setToY(0);
 
         }
-
+        getStyleClass().add("animated-pane");
+        contentProperty.addListener((ob, o, n) -> {
+            setCenter(n);
+        });
     }
 
     /**
@@ -44,15 +54,18 @@ public class AnimatedPane extends BorderPane {
      * @param d    direction (like: MD_LEFT_TO_RIGHT)
      */
     public void setGraphic(Node node, MoveDirection d) {
-        transition[d.indexs[0]].play();
+        transitions[d.indexs[0]].play();
         new Thread() {
             public void run() {
                 try {
-                    Thread.sleep((long) animationLength.toMillis());
+                    Thread.sleep((long) animationLengthProperty.getValue().toMillis());
 
                     Platform.runLater(() -> {
-                        setCenter(node);
-                        transition[d.indexs[1]].play();
+                        if (node != getCenter()) {
+                            contentProperty.setValue(node);
+                        }
+
+                        transitions[d.indexs[1]].play();
                     });
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -63,16 +76,21 @@ public class AnimatedPane extends BorderPane {
         ;
     }
 
+    /**
+     * 
+     * @param visible is this visible
+     * @param d       direction move out/in the parent
+     */
     public void animatedSetVisible(boolean visible, MoveDirection d) {
 
-        transition[d.indexs[visible ? 1 : 0]].play();
+        transitions[d.indexs[visible ? 1 : 0]].play();
         Thread ah = new Thread(() -> {
             try {
                 if (visible) {
                     Platform.runLater(() -> setVisible(true));
 
                 } else {
-                    Thread.sleep((long) animationLength.toMillis());
+                    Thread.sleep((long) animationLengthProperty.getValue().toMillis());
                     Platform.runLater(() -> setVisible(false));
                 }
 
@@ -84,36 +102,64 @@ public class AnimatedPane extends BorderPane {
 
     }
 
-    /**
-     * use this method before doing sth animated
-     * 
-     * @param width  parent width
-     * @param height parent height
-     */
     public void update(double width, double height) {
-        transition[MoveDirection.MD_LEFT_TO_RIGHT.indexs[0]].setToX(width);
+        /*
+         * lw: x cor when this hide on left of parent
+         * lh: y cor when this hide on top of parent
+         * indexs0: move out from the parent
+         * indexs1: come back
+         */
+        double lw = getLayoutX() - width, lh = getLayoutY() - height;
+        transitions[MoveDirection.MD_LEFT_TO_RIGHT.indexs[0]].setToX(width);
 
-        transition[MoveDirection.MD_LEFT_TO_RIGHT.indexs[1]].setFromX(-getLayoutX() - getWidth());
+        transitions[MoveDirection.MD_LEFT_TO_RIGHT.indexs[1]].setFromX(lw);
 
-        transition[MoveDirection.MD_RIGHT_TO_LEFT.indexs[0]].setToX(-getLayoutX() - getWidth());
+        transitions[MoveDirection.MD_RIGHT_TO_LEFT.indexs[0]].setToX(lw);
 
-        transition[MoveDirection.MD_RIGHT_TO_LEFT.indexs[1]].setFromX(width);
+        transitions[MoveDirection.MD_RIGHT_TO_LEFT.indexs[1]].setFromX(width);
 
-        transition[MoveDirection.MD_BOTTOM_TO_TOP.indexs[0]].setToY(-getLayoutY() - getHeight());
+        transitions[MoveDirection.MD_BOTTOM_TO_TOP.indexs[0]].setToY(lh);
 
-        transition[MoveDirection.MD_BOTTOM_TO_TOP.indexs[1]].setFromY(height);
+        transitions[MoveDirection.MD_BOTTOM_TO_TOP.indexs[1]].setFromY(height);
 
-        transition[MoveDirection.MD_TOP_TO_BOTTOM.indexs[0]].setToY(height);
+        transitions[MoveDirection.MD_TOP_TO_BOTTOM.indexs[0]].setToY(height);
 
-        transition[MoveDirection.MD_TOP_TO_BOTTOM.indexs[1]].setFromY(-getLayoutY() - getHeight());
+        transitions[MoveDirection.MD_TOP_TO_BOTTOM.indexs[1]].setFromY(lh);
     }
 
+    @Override
+    public Transition[] getTransitions() {
+        return transitions;
+    }
+
+    @Override
     public Duration getAnimationLength() {
-        return animationLength;
+        return animationLengthProperty.getValue();
     }
 
-    public void setAnimationLength(Duration animationLength) {
-        this.animationLength = animationLength;
+    @Override
+    public void setAnimationLength(Duration length) {
+        animationLengthProperty.setValue(length);
+    }
+
+    @Override
+    public double getAnimationRange() {
+        return 0;
+    }
+
+    @Override
+    public void setAnimationRange(double range) {
+
+    }
+
+    @Override
+    public ObjectProperty<Duration> animationLengthProperty() {
+        return animationLengthProperty;
+    }
+
+    @Override
+    public DoubleProperty animationRangeProperty() {
+        return null;
     }
 
 }

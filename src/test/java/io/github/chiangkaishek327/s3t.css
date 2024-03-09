@@ -1,0 +1,11 @@
+.animated-tabpane .animated-tabpane-header {
+    -fx-background-color: #000;
+}
+
+.animated-tabpane .animated-tabpane-header .animated-tab .animated-tab-close-button {
+    -fx-background-color: #00f;
+}
+
+.animated-tabpane .animated-tabpane-header .animated-tab {
+    -fx-background-color: #0ff;
+}
