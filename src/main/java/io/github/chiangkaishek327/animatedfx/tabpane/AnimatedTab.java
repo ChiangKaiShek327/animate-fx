@@ -65,14 +65,6 @@ public class AnimatedTab<K> implements EventTarget, Animated, Closeable {
             }
 
         });
-        button.setOnMouseExited(e -> {
-            if (!selectedProperty.getValue())
-                button.getTransitions()[1].play();
-        });
-        button.setOnMouseEntered(e -> {
-            if (!selectedProperty.getValue())
-                button.getTransitions()[0].play();
-        });
         closeButton.visibleProperty().bind(closeableProperty);
         closeButton.setText("X");
 
@@ -81,9 +73,13 @@ public class AnimatedTab<K> implements EventTarget, Animated, Closeable {
         onClosedProperty.setValue(e -> {
             close();
         });
+
         closeButton.setOnAction(onClosedProperty.getValue());
         selectedProperty.addListener((ob, o, n) -> {
             button.pseudoClassStateChanged(PseudoClass.getPseudoClass("selected"), n);
+        });
+        tabPaneProperty.addListener((ob, o, n) -> {
+
         });
     }
 
@@ -136,6 +132,7 @@ public class AnimatedTab<K> implements EventTarget, Animated, Closeable {
      * @return as the name
      */
     public BooleanProperty selectedProperty() {
+
         return selectedProperty;
     }
 
@@ -277,6 +274,16 @@ public class AnimatedTab<K> implements EventTarget, Animated, Closeable {
         getParentTabPane().load((K) getParentTabPane().tabs().keySet().toArray()[0]);
         selectedProperty.setValue(false);
         tabPaneProperty.setValue(null);
+    }
+
+    @Override
+    public double getAnimationByRange() {
+        return button.getAnimationByRange();
+    }
+
+    @Override
+    public void setAnimationByRange(double range) {
+        button.setAnimationByRange(range);
     }
 
 }

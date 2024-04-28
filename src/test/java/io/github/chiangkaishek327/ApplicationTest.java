@@ -4,8 +4,7 @@ import org.junit.jupiter.api.Test;
 
 class ApplicationTest {
 
-    @Test
-    void shouldAnswerWithTrue() {
+    public static void main(String[] args) {
         Rnr.l();
     }
 }

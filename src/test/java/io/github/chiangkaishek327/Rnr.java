@@ -2,6 +2,7 @@ package io.github.chiangkaishek327;
 
 import io.github.chiangkaishek327.animatedfx.AnimatedButton;
 import io.github.chiangkaishek327.animatedfx.AnimatedPane;
+import io.github.chiangkaishek327.animatedfx.AnimatedButton.AnimationMode;
 import io.github.chiangkaishek327.animatedfx.AnimatedPane.MoveDirection;
 import io.github.chiangkaishek327.animatedfx.tabpane.AnimatedTab;
 import io.github.chiangkaishek327.animatedfx.tabpane.AnimatedTabPane;
@@ -21,6 +22,7 @@ public class Rnr extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         AnimatedButton bf = new AnimatedButton();
+        bf.setAnimationMode(AnimationMode.AM_SCALE);
         VBox ct = new VBox();
         if (true) {
             AnimatedTabPane<String> atp = new AnimatedTabPane<>();
@@ -60,14 +62,14 @@ public class Rnr extends Application {
                 atp.addTabs(at, at2, at3);
             }
             ap.setTop(ct);
-            ap.setCenter(new Rectangle(100, 100));
+            ap.setCenter(atp);
             ap.getStylesheets()
                     .add(Rnr.class.getResource("s3t.css").toExternalForm());
             Scene scene = new Scene(ap);
             primaryStage.setScene(scene);
             primaryStage.show();
             Thread.sleep(1000);
-            atp.update(100, 100);
+            atp.update(400, 400);
             ap.setGraphic(atp, MoveDirection.MD_BOTTOM_TO_TOP);
         }
     }

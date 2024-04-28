@@ -40,6 +40,18 @@ public interface Animated {
 
     /**
      * 
+     * @return like this:transitions.setByX(114);
+     */
+    public double getAnimationByRange();
+
+    /**
+     * 
+     * @param range like this:transitions.setByX(114);
+     */
+    public void setAnimationByRange(double range);
+
+    /**
+     * 
      * @return animation length property
      */
     public ObjectProperty<Duration> animationLengthProperty();

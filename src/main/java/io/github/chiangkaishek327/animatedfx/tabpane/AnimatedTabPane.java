@@ -83,7 +83,7 @@ public class AnimatedTabPane<K> extends BorderPane implements ResizableAnimated 
             loadContent(selected.getContent(), null);
         }
         selectedIndexProperty.setValue(selectedIndex);
-        selectedProperty.getValue().getButton().getTransitions()[1].play();
+        // selectedProperty.getValue().getButton().getTransitions()[1].play();
     }
 
     /**
@@ -186,6 +186,14 @@ public class AnimatedTabPane<K> extends BorderPane implements ResizableAnimated 
     @Override
     public DoubleProperty animationRangeProperty() {
         return null;
+    }
+
+    public double getAnimationByRange() {
+        return content.getAnimationByRange();
+    }
+
+    public void setAnimationByRange(double animationByRange) {
+        this.content.setAnimationByRange(animationByRange);
     }
 
 }

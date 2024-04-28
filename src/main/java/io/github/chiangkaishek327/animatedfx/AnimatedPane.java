@@ -1,11 +1,13 @@
 package io.github.chiangkaishek327.animatedfx;
 
+import io.github.chiangkaishek327.animatedfx.utils.DoSomethingTransition;
+import io.github.chiangkaishek327.animatedfx.utils.Utils;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
 import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
@@ -27,8 +29,10 @@ public class AnimatedPane extends BorderPane implements ResizableAnimated {
     TranslateTransition[] transitions = new TranslateTransition[8];
     ObjectProperty<Duration> animationLengthProperty = new SimpleObjectProperty<>(new Duration(100));
     ObjectProperty<Node> contentProperty = new SimpleObjectProperty<>();
+    DoubleProperty animationByRangeProperty = new SimpleDoubleProperty(20);
 
     public AnimatedPane() {
+
         for (int i = 0; i < transitions.length; i++) {
             transitions[i] = new TranslateTransition();
             transitions[i].setNode(this);
@@ -41,7 +45,15 @@ public class AnimatedPane extends BorderPane implements ResizableAnimated {
             transitions[md.indexs[0]].setFromY(0);
             transitions[md.indexs[1]].setToY(0);
 
+            transitions[md.indexs[1]].setByY(animationByRangeProperty.doubleValue());
         }
+        transitions[MoveDirection.MD_BOTTOM_TO_TOP.indexs[1]].setByY(-animationByRangeProperty.doubleValue());
+
+        transitions[MoveDirection.MD_RIGHT_TO_LEFT.indexs[1]].setByX(-animationByRangeProperty.doubleValue());
+
+        transitions[MoveDirection.MD_TOP_TO_BOTTOM.indexs[1]].setByY(animationByRangeProperty.doubleValue());
+
+        transitions[MoveDirection.MD_LEFT_TO_RIGHT.indexs[1]].setByX(animationByRangeProperty.doubleValue());
         getStyleClass().add("animated-pane");
         contentProperty.addListener((ob, o, n) -> {
             setCenter(n);
@@ -54,26 +66,16 @@ public class AnimatedPane extends BorderPane implements ResizableAnimated {
      * @param d    direction (like: MD_LEFT_TO_RIGHT)
      */
     public void setGraphic(Node node, MoveDirection d) {
-        transitions[d.indexs[0]].play();
-        new Thread() {
-            public void run() {
-                try {
-                    Thread.sleep((long) animationLengthProperty.getValue().toMillis());
+        Utils.playSequenitalTransition(this, new Transition[] {
+                transitions[d.indexs[0]], new DoSomethingTransition() {
 
-                    Platform.runLater(() -> {
-                        if (node != getCenter()) {
-                            contentProperty.setValue(node);
-                        }
+                    @Override
+                    public void someThingYouWantToDo() {
+                        setCenter(node);
+                    }
 
-                        transitions[d.indexs[1]].play();
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }.start();
-        ;
+                }, transitions[d.indexs[1]]
+        });
     }
 
     /**
@@ -82,23 +84,24 @@ public class AnimatedPane extends BorderPane implements ResizableAnimated {
      * @param d       direction move out/in the parent
      */
     public void animatedSetVisible(boolean visible, MoveDirection d) {
+        Transition dsst = new DoSomethingTransition() {
 
-        transitions[d.indexs[visible ? 1 : 0]].play();
-        Thread ah = new Thread(() -> {
-            try {
-                if (visible) {
-                    Platform.runLater(() -> setVisible(true));
-
-                } else {
-                    Thread.sleep((long) animationLengthProperty.getValue().toMillis());
-                    Platform.runLater(() -> setVisible(false));
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
+            @Override
+            public void someThingYouWantToDo() {
+                setVisible(visible);
             }
-        });
-        ah.start();
+
+        };
+        if (visible) {
+            Utils.playSequenitalTransition(this, new Transition[] {
+                    dsst, transitions[d.indexs[1]]
+            });
+        } else {
+
+            Utils.playSequenitalTransition(this, new Transition[] {
+                    transitions[d.indexs[0]], dsst
+            });
+        }
 
     }
 
@@ -125,6 +128,7 @@ public class AnimatedPane extends BorderPane implements ResizableAnimated {
         transitions[MoveDirection.MD_TOP_TO_BOTTOM.indexs[0]].setToY(height);
 
         transitions[MoveDirection.MD_TOP_TO_BOTTOM.indexs[1]].setFromY(lh);
+
     }
 
     @Override
@@ -160,6 +164,16 @@ public class AnimatedPane extends BorderPane implements ResizableAnimated {
     @Override
     public DoubleProperty animationRangeProperty() {
         return null;
+    }
+
+    @Override
+    public double getAnimationByRange() {
+        return animationByRangeProperty.getValue();
+    }
+
+    @Override
+    public void setAnimationByRange(double animationByRange) {
+        this.animationByRangeProperty.setValue(animationByRange);
     }
 
 }
