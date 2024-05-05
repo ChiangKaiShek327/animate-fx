@@ -6,7 +6,7 @@
 
     <groupId>io.github.chiangkaishek327</groupId>
     <artifactId>animated-fx</artifactId>
-    <version>1.30001</version>
+    <version>1.30002</version>
     <url>https://github.com/chiangkaishek327/animated-fx</url>
 
     <name>${project.groupId}:${project.artifactId}</name>

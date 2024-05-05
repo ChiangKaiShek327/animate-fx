@@ -52,9 +52,12 @@ public class AnimatedTab<K> implements EventTarget, Animated, Closeable {
         button.textProperty().bind(titleProperty);
         titleProperty.setValue(title);
         button.getStyleClass().add("animated-tab");
+        button.setFocusTraversable(false);
         content.getStyleClass().clear();
         content.getStyleClass().add("animated-tab-content");
+
         closeButton.getStyleClass().add("animated-tab-close-button");
+        closeButton.setFocusTraversable(false);
         button.setOnAction(e -> {
             selectedProperty.setValue(true);
             try {
