@@ -1,10 +1,8 @@
 package io.github.chiangkaishek327;
 
-import org.junit.jupiter.api.Test;
-
-class ApplicationTest {
-
+public class App {
     public static void main(String[] args) {
-        Rnr.l();
+        SmoothTransitionExample.a_();
     }
+
 }
