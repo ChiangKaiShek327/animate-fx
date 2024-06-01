@@ -39,6 +39,8 @@ public class PaneTranslateAnimationGroup extends PaneAnimationGroup {
                 fromx = rgtbrd;
                 tox = lftbrd;
                 break;
+            case NONE:
+                break;
 
         }
         TranslateTransition fromTransition = new TranslateTransition(getDuration(), from);

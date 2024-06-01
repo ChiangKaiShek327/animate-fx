@@ -10,7 +10,7 @@ import javafx.scene.layout.BorderPane;
  */
 public abstract class PaneAnimationGroup extends AnimationGroup<AnimatedPane> {
     public enum PaneAnimationDirection {
-        BOTTOM_TO_TOP, TOP_TO_BOTTOM, LEFT_TO_RIGHT, RIGHT_TO_LEFT
+        BOTTOM_TO_TOP, TOP_TO_BOTTOM, LEFT_TO_RIGHT, RIGHT_TO_LEFT, NONE
     }
 
     private DoubleProperty borderWidthProperty = new SimpleDoubleProperty(0);

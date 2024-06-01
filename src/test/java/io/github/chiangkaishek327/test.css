@@ -1,0 +1,19 @@
+.animated-tab-pane {
+    -fx-background-color: #000;
+}
+
+.animated-tab-pane .animated-tab-pane-content {
+    -fx-background-color: #00f;
+}
+
+.animated-tab-pane .animated-tab-pane-header {
+    -fx-background-color: #f00;
+}
+
+.animated-tab-header {
+    -fx-background-color: #0f0;
+}
+
+.animated-tab-header:selected {
+    -fx-background-color: #0ff;
+}

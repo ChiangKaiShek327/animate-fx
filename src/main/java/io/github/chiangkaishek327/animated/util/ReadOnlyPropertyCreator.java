@@ -6,6 +6,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.scene.control.TabPane;
 
 public class ReadOnlyPropertyCreator {
     public static <T> ReadOnlyObjectProperty<T> createObjectProperty(ObjectProperty<T> objectProperty) {
@@ -18,5 +19,7 @@ public class ReadOnlyPropertyCreator {
         ReadOnlyDoubleWrapper rodw = new ReadOnlyDoubleWrapper();
         rodw.bind(doubleProperty);
         return rodw.getReadOnlyProperty();
+
     }
+
 }

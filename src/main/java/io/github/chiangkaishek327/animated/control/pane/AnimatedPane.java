@@ -11,7 +11,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -30,9 +29,18 @@ public class AnimatedPane extends Pane implements Animated {
         initall();
     }
 
+    /**
+     * 
+     * @param node show something without animation
+     */
     public void show(Node node) {
         getCurrent().setCenter(node);
     }
+
+    /**
+     * 
+     * @param node show something with animation
+     */
 
     public void show(PaneAnimationDirection direction, Node node) {
         getNext().setCenter(node);

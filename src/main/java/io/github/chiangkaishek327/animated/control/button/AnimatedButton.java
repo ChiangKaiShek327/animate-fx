@@ -19,10 +19,20 @@ public class AnimatedButton extends Button implements Animated {
     private ObjectProperty<Duration> durationProperty = new SimpleObjectProperty<>(Duration.millis(100));
     private ReadOnlyObjectProperty<ButtonAnimationGroup> readOnlyAnimationGroupProperty = ReadOnlyPropertyCreator
             .createObjectProperty(animationGroupProperty);
-    AnimationGroupLoader<AnimatedButton> animationGroupLoader = new AnimationGroupLoader<AnimatedButton>(this);
+    AnimationGroupLoader<AnimatedButton> animationGroupLoader = new AnimationGroupLoader<AnimatedButton>(
+            AnimatedButton.this);
 
     public AnimatedButton() {
+        this("null");
+    }
+
+    /**
+     * 
+     * @param text text this button show
+     */
+    public AnimatedButton(String text) {
         super();
+        setFocusTraversable(false);
         animationTypeProperty.addListener((ob, o, n) -> {
             try {
                 ButtonAnimationGroup newAnimationGroup = ((ButtonAnimationGroup) animationGroupLoader.load(n.clazz));
@@ -40,14 +50,19 @@ public class AnimatedButton extends Button implements Animated {
                 throw new RuntimeException(e);
             }
         });
-        setAnimationType(ButtonAnimationType.BAT_SCALE);
-    }
-
-    public AnimatedButton(String text) {
-        this();
+        setAnimationType(ButtonAnimationType.BAT_TRANSLATE);
         setText(text);
     }
 
+    /**
+     * 
+     * @param animationType animation type will be set
+     *                      <p>
+     *                      tips: you can use animationgroup to animate some
+     *                      component
+     *                      <p>
+     *                      like: new XXXXAnimationGroup(XXXXControl);
+     */
     public void setAnimationType(ButtonAnimationType animationType) {
         animationTypeProperty.setValue(animationType);
     }
@@ -79,4 +94,17 @@ public class AnimatedButton extends Button implements Animated {
     public DoubleProperty changeScaleProperty() {
         return changeScaleProperty;
     };
+
+    public Duration getDuration() {
+        return durationProperty.getValue();
+    };
+
+    public void setDuration(Duration duration) {
+        durationProperty.setValue(duration);
+    };
+
+    public ObjectProperty<Duration> durationProperty() {
+        return durationProperty;
+    };
+
 }
