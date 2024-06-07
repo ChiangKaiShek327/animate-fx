@@ -1,8 +1,8 @@
 package io.github.chiangkaishek327.animated.control.tabpane;
 
+import io.github.chiangkaishek327.animated.animation.Animated;
 import io.github.chiangkaishek327.animated.control.pane.AnimatedPane;
 import io.github.chiangkaishek327.animated.control.pane.PaneAnimationGroup.PaneAnimationDirection;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -10,26 +10,32 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.control.ButtonBar;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-public class AnimatedTabPane extends VBox {
+/**
+ * styleclasses:
+ * AnimatedTabPane: animated-tab-pane
+ * --content: animated-tab-pane-content
+ * --buttonbox: animated-tab-pane-header
+ */
+public class AnimatedTabPane extends BorderPane implements Animated {
     protected HBox buttonBox = new HBox();
     protected AnimatedPane animatedPane = new AnimatedPane();
     protected ObservableList<AnimatedTab> tabs = FXCollections.observableArrayList();
     protected ObjectProperty<AnimatedTab> selectedProperty = new SimpleObjectProperty<>();
     protected IntegerProperty currentIndexProperty = new SimpleIntegerProperty(-1);
     private ObjectProperty<Duration> durationProperty = new SimpleObjectProperty<>(Duration.millis(100));
+    public static final String ATPSC_ANIMATED_TABPANE = "animated-tab-pane",
+            ATPSC_CONTENT = "animated-tab-pane-content", ATPSC_BUTTONBOX = "animated-tab-pane-header";
 
     public AnimatedTabPane() {
-        getStyleClass().add("animated-tab-pane");
-        animatedPane.getStyleClass().add("animated-tab-pane-content");
-        buttonBox.getStyleClass().add("animated-tab-pane-header");
-        getChildren().addAll(buttonBox, animatedPane);
+        getStyleClass().add(ATPSC_ANIMATED_TABPANE);
+        animatedPane.getStyleClass().add(ATPSC_CONTENT);
+        buttonBox.getStyleClass().add(ATPSC_BUTTONBOX);
+        setTop(buttonBox);
+        setCenter(animatedPane);
         widthProperty().addListener((ob, o, n) -> {
             double width = n.doubleValue();
             buttonBox.setPrefWidth(width);
@@ -54,19 +60,18 @@ public class AnimatedTabPane extends VBox {
 
                 if (c.getList().size() == 0) {
                     currentIndexProperty.setValue(-1);
+                    animatedPane.show(null);
                 }
                 buttonBox.getChildren().removeAll(c.getRemoved().stream().map(AnimatedTab::getButton).toList());
             }
         });
         selectedProperty.addListener((ob, o, n) -> {
             if (o != null) {
-                o.setSelectedStyleUsed(false);
+                o.setSelected(false);
             }
-            n.setSelectedStyleUsed(true);
+            n.setSelected(true);
         });
-        durationProperty.addListener((ob, o, n) -> {
-            animatedPane.setDuration(n);
-        });
+        animatedPane.durationProperty().bind(durationProperty);
     }
 
     public ObservableList<AnimatedTab> getTabs() {
@@ -77,14 +82,7 @@ public class AnimatedTabPane extends VBox {
         return selectedProperty.getValue();
     };
 
-    /**
-     * you shouldn't use this method, you should use the AnimatedTab's method
-     * "select" instead of that
-     * 
-     * @param tab tab need be loaded (this tab must in the tab list)
-     */
-    @Deprecated(since = "someone else me using this method wasn't recommended, so I deprecated this")
-    public void load(AnimatedTab tab) {
+    protected void load(AnimatedTab tab) {
         if (tabs.contains(tab)) {
             int indexNext = tabs.indexOf(tab);
             PaneAnimationDirection pad;
@@ -97,11 +95,12 @@ public class AnimatedTabPane extends VBox {
                 pad = PaneAnimationDirection.NONE;
             }
             animatedPane.show(pad, tab.getContent());
+            if (selectedProperty.get() != null)
+                selectedProperty.get().setSelected(false);
             selectedProperty.setValue(tab);
+
             currentIndexProperty.setValue(tabs.indexOf(tab));
-        } else {
-            throw new IllegalArgumentException(
-                    "tab not found " + tab.toString() + "\ndid you used this method without premission?😡");
+            tab.setSelected(true);
         }
     }
 

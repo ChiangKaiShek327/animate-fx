@@ -1,5 +1,6 @@
 package io.github.chiangkaishek327.animated.control.tabpane;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,44 +18,56 @@ import javafx.collections.ObservableSet;
 import javafx.css.CssMetaData;
 import javafx.css.PseudoClass;
 import javafx.css.Styleable;
-import javafx.event.EventDispatchChain;
-import javafx.event.EventTarget;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
-public class AnimatedTab implements Styleable, EventTarget {
+/**
+ * styleclasses:
+ * tab header: animated-tab-header
+ * --:selected: animated-tab-header:selected
+ * --close button: close-button
+ */
+public class AnimatedTab implements Styleable, Closeable {
     protected ObservableList<String> styleClasses = FXCollections.observableArrayList();
     protected SimpleStringProperty id = new SimpleStringProperty();
 
     protected List<CssMetaData<?, ?>> cssMetaData = new ArrayList<>();
     protected AnimatedButton thisButton = new AnimatedButton();
+    protected Button closeButton = new Button();
     protected ObservableSet<PseudoClass> pseudoClassStates = FXCollections.observableSet(new HashSet<>());
     // v really used
     protected SimpleStringProperty style = new SimpleStringProperty();
     protected ObjectProperty<AnimatedTabPane> ownerProperty = new SimpleObjectProperty<>();
     protected ObjectProperty<Node> contentProperty = new SimpleObjectProperty<>();
     protected StringProperty titleProperty = new SimpleStringProperty();
-    protected BooleanProperty selectedStyleUsed = new SimpleBooleanProperty(false);
+    protected BooleanProperty selectedProperty = new SimpleBooleanProperty(false);
+    protected BooleanProperty closeableProperty = new SimpleBooleanProperty(false);
     public static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
+    public static final String ATSC_HEADER = "animated-tab-header", ATSC_CLOSE_BUTTON = "close-button";
 
     public AnimatedTab(AnimatedTabPane owner) {
         this("null", owner);
     }
 
     public AnimatedTab(String title, AnimatedTabPane owner) {
-        this(title, owner, new Pane());
+        this(title, new Pane());
     }
 
     /**
      * 
      * @param title   title of this tab
-     * @param owner   owner of this tab (like: new AnimatedTab(animatedTabPane0);)
      * @param content content this tab display
      */
-    public AnimatedTab(String title, AnimatedTabPane owner, Node content) {
+    public AnimatedTab(String title, Node content) {
+        closeButton.getStyleClass().addAll(ATSC_CLOSE_BUTTON);
+        closeButton.setPrefSize(10, 10);
+        closeButton.setPadding(new Insets(0));
+        closeButton.setOnAction(e -> close());
+        closeButton.setFocusTraversable(false);
+        contentProperty.setValue(content);
         ownerProperty.addListener((ob, o, n) -> {
             if (o != null) {
                 o.getTabs().remove(this);
@@ -63,19 +76,25 @@ public class AnimatedTab implements Styleable, EventTarget {
         style.addListener((ob, o, n) -> {
             content.setStyle(n);
         });
-        thisButton.getStyleClass().add("animated-tab-header");
-        thisButton.setText(title);
-        contentProperty.setValue(content);
-        setOwner(owner);
-        owner.getTabs().add(this);
-        thisButton.setOnAction(e -> {
-            select();
+        closeableProperty.addListener((ob, o, n) -> {
+            if (n) {
+                thisButton.setGraphic(closeButton);
+            } else {
+                thisButton.setGraphic(null);
+            }
         });
-        selectedStyleUsed.addListener((ob, o, n) -> {
+        thisButton.getStyleClass().add(ATSC_HEADER);
+        thisButton.setText(title);
+        selectedProperty.addListener((ob, o, n) -> {
 
             thisButton.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, n);
 
         });
+        thisButton.setOnAction(e -> {
+            if (!selectedProperty.get())
+                select();
+        });
+
     }
 
     /**
@@ -103,16 +122,16 @@ public class AnimatedTab implements Styleable, EventTarget {
         return contentProperty;
     }
 
-    public void setSelectedStyleUsed(boolean s) {
-        selectedStyleUsed.setValue(s);
+    protected void setSelected(boolean s) {
+        selectedProperty.setValue(s);
     }
 
-    public boolean isSelectedStyleUsed() {
-        return selectedStyleUsed.get();
+    public boolean isSelected() {
+        return selectedProperty.get();
     }
 
-    public BooleanProperty selectedStyleUsed() {
-        return selectedStyleUsed;
+    public BooleanProperty selectedProperty() {
+        return selectedProperty;
     }
 
     public void setTitle(String title) {
@@ -188,9 +207,13 @@ public class AnimatedTab implements Styleable, EventTarget {
         return "animated-tab";
     }
 
+    /**
+     * close this page (this method will be actived when the close button be
+     * clicked, of course, you can do this by urself)
+     */
     @Override
-    public EventDispatchChain buildEventDispatchChain(EventDispatchChain tail) {
-        return tail.append(thisButton.getEventDispatcher());
+    public void close() {
+        getOwner().getTabs().remove(this);
     }
 
 }

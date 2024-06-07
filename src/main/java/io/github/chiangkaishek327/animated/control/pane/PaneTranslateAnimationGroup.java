@@ -1,7 +1,11 @@
 package io.github.chiangkaishek327.animated.control.pane;
 
+import io.github.chiangkaishek327.animated.util.DoSthTransition;
+import io.github.chiangkaishek327.animated.util.OtherUtil;
 import javafx.animation.ParallelTransition;
+import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.scene.layout.BorderPane;
 
 public class PaneTranslateAnimationGroup extends PaneAnimationGroup {
@@ -54,8 +58,15 @@ public class PaneTranslateAnimationGroup extends PaneAnimationGroup {
         toTransition.setFromX(fromx);
         toTransition.setFromY(fromy);
         ParallelTransition transitions = new ParallelTransition(fromTransition, toTransition);
+        SequentialTransition seqs = new SequentialTransition(DoSthTransition.newDST(() -> to.setVisible(true)),
+                transitions, DoSthTransition.newDST(() -> {
+                    new Thread(() -> {
+                        OtherUtil.delayConviently((long) getDuration().toMillis());
+                        Platform.runLater(() -> from.setVisible(false));
+                    }).start();
 
-        transitions.play();
+                }));
+        seqs.play();
         ;
     }
 

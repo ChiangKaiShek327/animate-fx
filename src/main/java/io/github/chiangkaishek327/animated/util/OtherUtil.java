@@ -13,4 +13,12 @@ public class OtherUtil {
         }
         return result;
     }
+
+    public static void delayConviently(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -14,6 +14,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.util.Duration;
 
 public class AnimatedPane extends Pane implements Animated {
@@ -43,6 +44,7 @@ public class AnimatedPane extends Pane implements Animated {
      */
 
     public void show(PaneAnimationDirection direction, Node node) {
+        updateNext();
         getNext().setCenter(node);
         getNext().setVisible(true);
 
@@ -62,6 +64,13 @@ public class AnimatedPane extends Pane implements Animated {
     }
 
     private void initall() {
+        widthProperty().addListener((ob, o, n) -> {
+            update();
+        });
+
+        heightProperty().addListener((ob, o, n) -> {
+            update();
+        });
         animationGroupProperty.addListener((ob, o, n) -> {
             if (o != null) {
                 o.durationProperty().unbind();
@@ -73,7 +82,21 @@ public class AnimatedPane extends Pane implements Animated {
         vectorList.clear();
         animationGroupProperty.setValue(new PaneTranslateAnimationGroup(this));
         for (int i = 0; i < 2; i++) {
-            vectorList.add(new BorderPane());
+            BorderPane bp = new BorderPane();
+            vectorList.add(bp);
+            bp.prefHeightProperty().addListener((ob, o, n) -> {
+                Node center = bp.getCenter();
+                if (center instanceof Region) {
+                    ((Region) center).setPrefHeight(n.doubleValue());
+                }
+            });
+
+            bp.prefWidthProperty().addListener((ob, o, n) -> {
+                Node center = bp.getCenter();
+                if (center instanceof Region) {
+                    ((Region) center).setPrefWidth(n.doubleValue());
+                }
+            });
 
         }
         getChildren().addAll(vectorList);
@@ -81,7 +104,20 @@ public class AnimatedPane extends Pane implements Animated {
             initCurrect();
 
         });
+
         initCurrect();
+    }
+
+    public void update() {
+        getCurrent().setPrefHeight(getHeight());
+
+        getCurrent().setPrefWidth(getWidth());
+    }
+
+    private void updateNext() {
+        getNext().setPrefHeight(getHeight());
+
+        getNext().setPrefWidth(getWidth());
     }
 
     private void initCurrect() {
