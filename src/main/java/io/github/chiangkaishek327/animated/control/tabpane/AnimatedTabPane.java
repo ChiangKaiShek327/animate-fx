@@ -12,6 +12,8 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 /**
@@ -21,29 +23,47 @@ import javafx.util.Duration;
  * --buttonbox: animated-tab-pane-header
  */
 public class AnimatedTabPane extends BorderPane implements Animated {
-    protected HBox buttonBox = new HBox();
+    protected Pane buttonBox = new HBox();
     protected AnimatedPane animatedPane = new AnimatedPane();
     protected ObservableList<AnimatedTab> tabs = FXCollections.observableArrayList();
     protected ObjectProperty<AnimatedTab> selectedProperty = new SimpleObjectProperty<>();
     protected IntegerProperty currentIndexProperty = new SimpleIntegerProperty(-1);
     private ObjectProperty<Duration> durationProperty = new SimpleObjectProperty<>(Duration.millis(100));
+
+    private ObjectProperty<HeaderSide> headerSideProperty = new SimpleObjectProperty<>(HeaderSide.ATPHS_TOP);
     public static final String ATPSC_ANIMATED_TABPANE = "animated-tab-pane",
             ATPSC_CONTENT = "animated-tab-pane-content", ATPSC_BUTTONBOX = "animated-tab-pane-header";
 
+    public enum HeaderSide {
+        ATPHS_TOP, ATPHS_BOTTOM
+    }
+
+    @SuppressWarnings("all")
     public AnimatedTabPane() {
+        initBB();
+        headerSideProperty.addListener((ob, o, n) -> {
+            if (true) {
+                throw new UnsupportedOperationException("uncompleted function");
+            } else
+                switch (n) {
+                    case ATPHS_TOP:
+
+                        setTop(buttonBox);
+                        break;
+                    case ATPHS_BOTTOM:
+                        setBottom(buttonBox);
+                        break;
+
+                }
+        });
         getStyleClass().add(ATPSC_ANIMATED_TABPANE);
         animatedPane.getStyleClass().add(ATPSC_CONTENT);
-        buttonBox.getStyleClass().add(ATPSC_BUTTONBOX);
         setTop(buttonBox);
         setCenter(animatedPane);
         widthProperty().addListener((ob, o, n) -> {
             double width = n.doubleValue();
-            buttonBox.setPrefWidth(width);
+
             animatedPane.setPrefWidth(width);
-        });
-        heightProperty().addListener((ob, o, n) -> {
-            double height = n.doubleValue();
-            animatedPane.setPrefHeight(height - buttonBox.getHeight());
         });
         tabs.addListener((ListChangeListener.Change<? extends AnimatedTab> c) -> {
             c.next();
@@ -82,7 +102,13 @@ public class AnimatedTabPane extends BorderPane implements Animated {
         return selectedProperty.getValue();
     };
 
+    protected void initBB() {
+        buttonBox.getStyleClass().add(ATPSC_BUTTONBOX);
+    }
+
     protected void load(AnimatedTab tab) {
+        animatedPane.update();
+        animatedPane.updateNext();
         if (tabs.contains(tab)) {
             int indexNext = tabs.indexOf(tab);
             PaneAnimationDirection pad;
@@ -114,6 +140,18 @@ public class AnimatedTabPane extends BorderPane implements Animated {
 
     public ObjectProperty<Duration> durationProperty() {
         return durationProperty;
+    };
+
+    public HeaderSide getHeaderSide() {
+        return headerSideProperty.getValue();
+    };
+
+    public void setHeaderSide(HeaderSide hs) {
+        headerSideProperty.setValue(hs);
+    };
+
+    public ObjectProperty<HeaderSide> headerSideProperty() {
+        return headerSideProperty;
     };
 
     public int getCurrentPageIndex() {

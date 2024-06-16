@@ -1,12 +1,18 @@
 package io.github.chiangkaishek327;
 
+import java.awt.Image;
+import java.io.FileInputStream;
+
 import io.github.chiangkaishek327.animated.control.pane.AnimatedPane;
 import io.github.chiangkaishek327.animated.control.tabpane.AnimatedTab;
 import io.github.chiangkaishek327.animated.control.tabpane.AnimatedTabPane;
+import io.github.chiangkaishek327.animated.control.tabpane.AnimatedTabPane.HeaderSide;
+import io.github.chiangkaishek327.animated.util.SVGLoader;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -38,12 +44,19 @@ public class SmoothTransitionExample extends Application {
         ape.setBackground(
                 new Background(new BackgroundFill(Paint.valueOf("#abc"), null, null)));
         ap.show(atp);
-        FXMLLoader fxl = new FXMLLoader(App.class.getResource("test.fxml"));
+        FXMLLoader fxl = new FXMLLoader(SmoothTransitionExample.class.getResource("test.fxml"));
         fxl.setBuilderFactory(new JavaFXBuilderFactory());
         fxl.load();
         BorderPane bpw = fxl.getRoot();
+
         AnimatedTab at6 = new AnimatedTab("FXML test", bpw);
-        atp.getTabs().addAll(at6, at5, at2, at3, at4, at);
+
+        FXMLLoader fxl1 = new FXMLLoader(App.class.getResource("test.fxml"));
+        fxl1.setBuilderFactory(new JavaFXBuilderFactory());
+        fxl1.load();
+        BorderPane bpw2 = fxl1.getRoot();
+        AnimatedTab at7 = new AnimatedTab("FXML test", bpw2);
+        atp.getTabs().addAll(at7, at5, at2, at3, at4, at);
         atp.setDuration(Duration.millis(100));
         primaryStage.setScene(new Scene(ap));
 

@@ -35,6 +35,7 @@ public class AnimatedPane extends Pane implements Animated {
      * @param node show something without animation
      */
     public void show(Node node) {
+        update();
         getCurrent().setCenter(node);
     }
 
@@ -44,6 +45,7 @@ public class AnimatedPane extends Pane implements Animated {
      */
 
     public void show(PaneAnimationDirection direction, Node node) {
+        update();
         updateNext();
         getNext().setCenter(node);
         getNext().setVisible(true);
@@ -114,7 +116,7 @@ public class AnimatedPane extends Pane implements Animated {
         getCurrent().setPrefWidth(getWidth());
     }
 
-    private void updateNext() {
+    public void updateNext() {
         getNext().setPrefHeight(getHeight());
 
         getNext().setPrefWidth(getWidth());
