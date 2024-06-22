@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OtherUtil {
+    public static final String DEFAULT_TEXT = "default text";
+
     public static <T> List<T> getOtherElements(List<T> list, int index) {
         List<T> result = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {

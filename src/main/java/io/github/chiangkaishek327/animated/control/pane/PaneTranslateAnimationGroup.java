@@ -6,6 +6,7 @@ import javafx.animation.ParallelTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 
 public class PaneTranslateAnimationGroup extends PaneAnimationGroup {
@@ -14,7 +15,16 @@ public class PaneTranslateAnimationGroup extends PaneAnimationGroup {
     }
 
     @Override
-    public void turn(PaneAnimationDirection direction, BorderPane from, BorderPane to) {
+    public void turn(PaneAnimationDirection direction, Node from, Node to) {
+        ParallelTransition transitions = generateTransitions(direction, from, to);
+        // ; transitions.getChildren().addAll(fft, tft);
+
+        transitions.play();
+
+    }
+
+    public ParallelTransition generateTransitions(PaneAnimationDirection direction, Node from, Node to) {
+        setVectorVisible(from, to);
         double fromx = 0;
         double fromy = 0;
         double tox = 0;
@@ -58,16 +68,7 @@ public class PaneTranslateAnimationGroup extends PaneAnimationGroup {
         toTransition.setFromX(fromx);
         toTransition.setFromY(fromy);
         ParallelTransition transitions = new ParallelTransition(fromTransition, toTransition);
-        SequentialTransition seqs = new SequentialTransition(DoSthTransition.newDST(() -> to.setVisible(true)),
-                transitions, DoSthTransition.newDST(() -> {
-                    new Thread(() -> {
-                        OtherUtil.delayConviently((long) getDuration().toMillis());
-                        Platform.runLater(() -> from.setVisible(false));
-                    }).start();
-
-                }));
-        seqs.play();
-        ;
-    }
+        return transitions;
+    };
 
 }

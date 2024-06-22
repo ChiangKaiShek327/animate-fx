@@ -3,6 +3,7 @@ package io.github.chiangkaishek327.animated.control.button;
 import io.github.chiangkaishek327.animated.animation.Animated;
 import io.github.chiangkaishek327.animated.control.button.ButtonAnimationGroup.ButtonAnimationType;
 import io.github.chiangkaishek327.animated.util.AnimationGroupLoader;
+import io.github.chiangkaishek327.animated.util.OtherUtil;
 import io.github.chiangkaishek327.animated.util.ReadOnlyPropertyCreator;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -23,7 +24,7 @@ public class AnimatedButton extends Button implements Animated {
             AnimatedButton.this);
 
     public AnimatedButton() {
-        this("null");
+        this(OtherUtil.DEFAULT_TEXT);
     }
 
     /**

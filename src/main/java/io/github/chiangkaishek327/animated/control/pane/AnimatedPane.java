@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.chiangkaishek327.animated.animation.Animated;
+import io.github.chiangkaishek327.animated.control.pane.PaneAnimationGroup.PaneAnimationType;
+import io.github.chiangkaishek327.animated.util.AnimationGroupLoader;
 import io.github.chiangkaishek327.animated.control.pane.PaneAnimationGroup.PaneAnimationDirection;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -24,10 +26,15 @@ public class AnimatedPane extends Pane implements Animated {
     protected ObjectProperty<PaneAnimationGroup> animationGroupProperty = new SimpleObjectProperty<>();
     protected DoubleProperty borderWidthProperty = new SimpleDoubleProperty(0);
     private ObjectProperty<Duration> durationProperty = new SimpleObjectProperty<>(Duration.millis(100));
+    protected ObjectProperty<PaneAnimationType> animationTypeProperty = new SimpleObjectProperty<>();
+    AnimationGroupLoader<AnimatedPane> animationGroupLoader = new AnimationGroupLoader<AnimatedPane>(
+            AnimatedPane.this);
 
     public AnimatedPane() {
         super();
         initall();
+
+        setAnimationType(PaneAnimationType.PAT_TRANSLATE);
     }
 
     /**
@@ -81,8 +88,16 @@ public class AnimatedPane extends Pane implements Animated {
             n.durationProperty().bind(durationProperty);
             n.borderWidthProperty().bind(borderWidthProperty);
         });
+        animationTypeProperty.addListener((ob, o, n) -> {
+            try {
+                PaneAnimationGroup newAnimationGroup = ((PaneAnimationGroup) animationGroupLoader.load(n.clazz));
+                animationGroupProperty.setValue(newAnimationGroup);
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
         vectorList.clear();
-        animationGroupProperty.setValue(new PaneTranslateAnimationGroup(this));
         for (int i = 0; i < 2; i++) {
             BorderPane bp = new BorderPane();
             vectorList.add(bp);
@@ -106,7 +121,6 @@ public class AnimatedPane extends Pane implements Animated {
             initCurrect();
 
         });
-
         initCurrect();
     }
 
@@ -160,4 +174,23 @@ public class AnimatedPane extends Pane implements Animated {
     public DoubleProperty borderWidthProperty() {
         return borderWidthProperty;
     };
+
+    /**
+     * 
+     * @param animationType You have 2 choice:
+     *                      <p>
+     *                      1.PAT_TRANSLATE
+     *                      2.PAT_OAT (It means: Opacity%Translate)
+     */
+    public void setAnimationType(PaneAnimationType animationType) {
+        animationTypeProperty.setValue(animationType);
+    }
+
+    public PaneAnimationType getAnimationType() {
+        return animationTypeProperty.getValue();
+    }
+
+    public ObjectProperty<PaneAnimationType> animationTypeProperty() {
+        return animationTypeProperty;
+    }
 }

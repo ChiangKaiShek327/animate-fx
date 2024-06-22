@@ -7,9 +7,12 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -23,11 +26,12 @@ import javafx.util.Duration;
  * --buttonbox: animated-tab-pane-header
  */
 public class AnimatedTabPane extends BorderPane implements Animated {
-    protected Pane buttonBox = new HBox();
+    protected HBox buttonBox = new HBox();
     protected AnimatedPane animatedPane = new AnimatedPane();
     protected ObservableList<AnimatedTab> tabs = FXCollections.observableArrayList();
     protected ObjectProperty<AnimatedTab> selectedProperty = new SimpleObjectProperty<>();
     protected IntegerProperty currentIndexProperty = new SimpleIntegerProperty(-1);
+    protected StringProperty titleProperty = new SimpleStringProperty("");
     private ObjectProperty<Duration> durationProperty = new SimpleObjectProperty<>(Duration.millis(100));
 
     private ObjectProperty<HeaderSide> headerSideProperty = new SimpleObjectProperty<>(HeaderSide.ATPHS_TOP);
@@ -41,6 +45,7 @@ public class AnimatedTabPane extends BorderPane implements Animated {
     @SuppressWarnings("all")
     public AnimatedTabPane() {
         initBB();
+        buttonBox.setAlignment(Pos.BOTTOM_CENTER);
         headerSideProperty.addListener((ob, o, n) -> {
             if (true) {
                 throw new UnsupportedOperationException("uncompleted function");
@@ -162,4 +167,11 @@ public class AnimatedTabPane extends BorderPane implements Animated {
         return currentIndexProperty;
     };
 
+    public AnimatedPane getContentPane() {
+        return animatedPane;
+    }
+
+    public HBox getButtonBox() {
+        return buttonBox;
+    }
 }

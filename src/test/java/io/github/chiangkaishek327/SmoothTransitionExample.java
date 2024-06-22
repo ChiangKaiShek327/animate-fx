@@ -1,9 +1,9 @@
 package io.github.chiangkaishek327;
 
-import java.awt.Image;
 import java.io.FileInputStream;
 
 import io.github.chiangkaishek327.animated.control.pane.AnimatedPane;
+import io.github.chiangkaishek327.animated.control.pane.PaneAnimationGroup.PaneAnimationType;
 import io.github.chiangkaishek327.animated.control.tabpane.AnimatedTab;
 import io.github.chiangkaishek327.animated.control.tabpane.AnimatedTabPane;
 import io.github.chiangkaishek327.animated.control.tabpane.AnimatedTabPane.HeaderSide;
@@ -12,6 +12,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
@@ -28,8 +29,8 @@ public class SmoothTransitionExample extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         AnimatedTabPane atp = new AnimatedTabPane();
-        atp.setPrefHeight(300);
-        atp.setPrefWidth(400);
+        atp.setPrefHeight(500);
+        atp.setPrefWidth(700);
         AnimatedTab at = new AnimatedTab("red", new Rectangle(100, 100, Paint.valueOf("#ff0000")));
         AnimatedTab at2 = new AnimatedTab("blue", new Rectangle(100, 100, Paint.valueOf("#0000ff")));
 
@@ -49,17 +50,17 @@ public class SmoothTransitionExample extends Application {
         fxl.load();
         BorderPane bpw = fxl.getRoot();
 
-        AnimatedTab at6 = new AnimatedTab("FXML test", bpw);
-
         FXMLLoader fxl1 = new FXMLLoader(App.class.getResource("test.fxml"));
         fxl1.setBuilderFactory(new JavaFXBuilderFactory());
         fxl1.load();
         BorderPane bpw2 = fxl1.getRoot();
         AnimatedTab at7 = new AnimatedTab("FXML test", bpw2);
+        at7.setCloseable(true);
         atp.getTabs().addAll(at7, at5, at2, at3, at4, at);
-        atp.setDuration(Duration.millis(100));
-        primaryStage.setScene(new Scene(ap));
-
+        atp.setDuration(Duration.millis(200));
+        atp.getContentPane().setAnimationType(PaneAnimationType.PAT_OAT);
+        primaryStage.setScene(new Scene(new AnchorPane(atp)));
+        at.setIcon(new Image(App.class.getResourceAsStream("example.png")));
         primaryStage.show();
     }
 

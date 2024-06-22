@@ -7,7 +7,7 @@ public abstract class ButtonAnimationGroup extends AnimationGroup<AnimatedButton
     public enum ButtonAnimationType {
         BAT_SCALE(ButtonScaleAnimationGroup.class), BAT_TRANSLATE(ButtonTranslateAnimationGroup.class);
 
-        public Class<? extends ButtonAnimationGroup> clazz;
+        public final Class<? extends ButtonAnimationGroup> clazz;
 
         ButtonAnimationType(Class<? extends ButtonAnimationGroup> clazz) {
             this.clazz = clazz;

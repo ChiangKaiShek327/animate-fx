@@ -6,9 +6,13 @@ import java.util.HashSet;
 import java.util.List;
 
 import io.github.chiangkaishek327.animated.control.button.AnimatedButton;
+import io.github.chiangkaishek327.animated.util.OtherUtil;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -19,8 +23,14 @@ import javafx.css.CssMetaData;
 import javafx.css.PseudoClass;
 import javafx.css.Styleable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
@@ -30,30 +40,34 @@ import javafx.util.Duration;
  * --:selected: animated-tab-header:selected
  * --close button: close-button
  */
-public class AnimatedTab implements Styleable, Closeable {
-    protected ObservableList<String> styleClasses = FXCollections.observableArrayList();
-    protected SimpleStringProperty id = new SimpleStringProperty();
+public class AnimatedTab implements Closeable {
 
-    protected List<CssMetaData<?, ?>> cssMetaData = new ArrayList<>();
-    protected AnimatedButton thisButton = new AnimatedButton();
+    protected AnimatedButton tabHeader = new AnimatedButton();
+    protected HBox tabHeaderGraphic = new HBox();
     protected Button closeButton = new Button();
-    protected ObservableSet<PseudoClass> pseudoClassStates = FXCollections.observableSet(new HashSet<>());
-    // v really used
+    protected Label textLabel = new Label();
+    protected ObjectProperty<Image> iconProperty = new SimpleObjectProperty<>();
+    protected ImageView iconView = new ImageView();
     protected SimpleStringProperty style = new SimpleStringProperty();
     protected ObjectProperty<AnimatedTabPane> ownerProperty = new SimpleObjectProperty<>();
     protected ObjectProperty<Node> contentProperty = new SimpleObjectProperty<>();
     protected StringProperty titleProperty = new SimpleStringProperty();
     protected BooleanProperty selectedProperty = new SimpleBooleanProperty(false);
+
+    protected ReadOnlyBooleanProperty selectedReadOnlyProperty = ReadOnlyBooleanProperty
+            .readOnlyBooleanProperty(selectedProperty);
     protected BooleanProperty closeableProperty = new SimpleBooleanProperty(false);
+    protected DoubleProperty iconSizeProperty = new SimpleDoubleProperty(15);
+
     public static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
     public static final String ATSC_HEADER = "animated-tab-header", ATSC_CLOSE_BUTTON = "close-button";
 
-    public AnimatedTab(AnimatedTabPane owner) {
-        this("null", owner);
+    public AnimatedTab(String title) {
+        this(title, new AnchorPane(), null);
     }
 
-    public AnimatedTab(String title, AnimatedTabPane owner) {
-        this(title, new Pane());
+    public AnimatedTab(String title, Node content) {
+        this(title, content, null);
     }
 
     /**
@@ -61,7 +75,9 @@ public class AnimatedTab implements Styleable, Closeable {
      * @param title   title of this tab
      * @param content content this tab display
      */
-    public AnimatedTab(String title, Node content) {
+    public AnimatedTab(String title, Node content, Image icon) {
+        tabHeader.setText("");
+        tabHeaderGraphic.setAlignment(Pos.CENTER);
         closeButton.getStyleClass().addAll(ATSC_CLOSE_BUTTON);
         closeButton.setPrefSize(10, 10);
         closeButton.setPadding(new Insets(0));
@@ -76,25 +92,40 @@ public class AnimatedTab implements Styleable, Closeable {
         style.addListener((ob, o, n) -> {
             content.setStyle(n);
         });
+        closeButton.visibleProperty().bind(closeableProperty);
+        tabHeader.getStyleClass().add(ATSC_HEADER);
+        tabHeader.setGraphic(tabHeaderGraphic);
+        tabHeaderGraphic.getChildren().addAll(textLabel);
+        iconProperty.addListener((ob, o, n) -> {
+            if (n == null && tabHeaderGraphic.getChildren().contains(iconView)) {
+                tabHeaderGraphic.getChildren().remove(iconView);
+            } else {
+                tabHeaderGraphic.getChildren().add(0, iconView);
+            }
+
+        });
         closeableProperty.addListener((ob, o, n) -> {
             if (n) {
-                thisButton.setGraphic(closeButton);
+                tabHeaderGraphic.getChildren().add(closeButton);
             } else {
-                thisButton.setGraphic(null);
+                tabHeaderGraphic.getChildren().remove(closeButton);
             }
         });
-        thisButton.getStyleClass().add(ATSC_HEADER);
-        thisButton.setText(title);
+        iconView.fitHeightProperty().bind(iconSizeProperty);
+        iconView.fitWidthProperty().bind(iconSizeProperty);
+        iconView.imageProperty().bind(iconProperty);
+        textLabel.textProperty().bind(titleProperty);
         selectedProperty.addListener((ob, o, n) -> {
 
-            thisButton.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, n);
+            tabHeader.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, n);
 
         });
-        thisButton.setOnAction(e -> {
+        tabHeader.setOnAction(e -> {
             if (!selectedProperty.get())
                 select();
         });
-
+        iconProperty.setValue(icon);
+        setTitle(title);
     }
 
     /**
@@ -102,12 +133,12 @@ public class AnimatedTab implements Styleable, Closeable {
      */
     public void select() {
         ownerProperty.get().load(this);
-        thisButton.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
+        tabHeader.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
 
     }
 
     public AnimatedButton getButton() {
-        return thisButton;
+        return tabHeader;
     }
 
     public void setContent(Node node) {
@@ -130,8 +161,8 @@ public class AnimatedTab implements Styleable, Closeable {
         return selectedProperty.get();
     }
 
-    public BooleanProperty selectedProperty() {
-        return selectedProperty;
+    public ReadOnlyBooleanProperty selectedProperty() {
+        return selectedReadOnlyProperty;
     }
 
     public void setTitle(String title) {
@@ -159,52 +190,39 @@ public class AnimatedTab implements Styleable, Closeable {
     }
 
     public Duration getDuration() {
-        return thisButton.getDuration();
+        return tabHeader.getDuration();
     };
 
     public void setDuration(Duration duration) {
-        thisButton.setDuration(duration);
+        tabHeader.setDuration(duration);
     };
 
     public ObjectProperty<Duration> durationProperty() {
-        return thisButton.durationProperty();
+        return tabHeader.durationProperty();
     };
 
-    @Override
-    public String getId() {
-        return id.getValue();
+    public void setIcon(Image icon) {
+        iconProperty.set(icon);
     }
 
-    @Override
-    public ObservableList<String> getStyleClass() {
-        return styleClasses;
+    public Image getIcon() {
+        return iconProperty.get();
     }
 
-    @Override
-    public String getStyle() {
-        return style.getValue();
+    public ObjectProperty<Image> iconProperty() {
+        return iconProperty;
     }
 
-    @Override
-    public List<CssMetaData<? extends Styleable, ?>> getCssMetaData() {
-        return cssMetaData;
+    public void setCloseable(boolean closeable) {
+        closeableProperty.setValue(closeable);
     }
 
-    @Override
-    public Styleable getStyleableParent() {
-        return ownerProperty.getValue();
-
+    public boolean isCloseable() {
+        return closeableProperty.getValue();
     }
 
-    @Override
-    public ObservableSet<PseudoClass> getPseudoClassStates() {
-        return pseudoClassStates;
-
-    }
-
-    @Override
-    public String getTypeSelector() {
-        return "animated-tab";
+    public BooleanProperty closeableProperty() {
+        return closeableProperty;
     }
 
     /**
