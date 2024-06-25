@@ -1,14 +1,18 @@
 package io.github.chiangkaishek327;
 
 import java.io.FileInputStream;
+import java.util.Random;
 
+import io.github.chiangkaishek327.animated.control.label.AnimatedLabel;
 import io.github.chiangkaishek327.animated.control.pane.AnimatedPane;
 import io.github.chiangkaishek327.animated.control.pane.PaneAnimationGroup.PaneAnimationType;
 import io.github.chiangkaishek327.animated.control.tabpane.AnimatedTab;
 import io.github.chiangkaishek327.animated.control.tabpane.AnimatedTabPane;
 import io.github.chiangkaishek327.animated.control.tabpane.AnimatedTabPane.HeaderSide;
+import io.github.chiangkaishek327.animated.util.OtherUtil;
 import io.github.chiangkaishek327.animated.util.SVGLoader;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Scene;
@@ -57,10 +61,14 @@ public class SmoothTransitionExample extends Application {
         AnimatedTab at7 = new AnimatedTab("FXML test", bpw2);
         at7.setCloseable(true);
         atp.getTabs().addAll(at7, at5, at2, at3, at4, at);
-        atp.setDuration(Duration.millis(200));
+        atp.setDuration(Duration.millis(100));
         atp.getContentPane().setAnimationType(PaneAnimationType.PAT_OAT);
-        primaryStage.setScene(new Scene(new AnchorPane(atp)));
         at.setIcon(new Image(App.class.getResourceAsStream("example.png")));
+        AnimatedLabel label = new AnimatedLabel();
+        label.setPrefSize(300, 300);
+
+        label.setLayoutX(800);
+        primaryStage.setScene(new Scene(new AnchorPane(atp)));
         primaryStage.show();
     }
 

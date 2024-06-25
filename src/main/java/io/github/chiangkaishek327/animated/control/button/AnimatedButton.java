@@ -2,7 +2,6 @@ package io.github.chiangkaishek327.animated.control.button;
 
 import io.github.chiangkaishek327.animated.animation.Animated;
 import io.github.chiangkaishek327.animated.control.button.ButtonAnimationGroup.ButtonAnimationType;
-import io.github.chiangkaishek327.animated.util.AnimationGroupLoader;
 import io.github.chiangkaishek327.animated.util.OtherUtil;
 import io.github.chiangkaishek327.animated.util.ReadOnlyPropertyCreator;
 import javafx.beans.property.DoubleProperty;
@@ -20,8 +19,6 @@ public class AnimatedButton extends Button implements Animated {
     private ObjectProperty<Duration> durationProperty = new SimpleObjectProperty<>(Duration.millis(100));
     private ReadOnlyObjectProperty<ButtonAnimationGroup> readOnlyAnimationGroupProperty = ReadOnlyPropertyCreator
             .createObjectProperty(animationGroupProperty);
-    AnimationGroupLoader<AnimatedButton> animationGroupLoader = new AnimationGroupLoader<AnimatedButton>(
-            AnimatedButton.this);
 
     public AnimatedButton() {
         this(OtherUtil.DEFAULT_TEXT);
@@ -36,7 +33,7 @@ public class AnimatedButton extends Button implements Animated {
         setFocusTraversable(false);
         animationTypeProperty.addListener((ob, o, n) -> {
             try {
-                ButtonAnimationGroup newAnimationGroup = ((ButtonAnimationGroup) animationGroupLoader.load(n.clazz));
+                ButtonAnimationGroup newAnimationGroup = n.clazz.getConstructor(AnimatedButton.class).newInstance(this);
                 newAnimationGroup.durationProperty().bind(durationProperty);
                 newAnimationGroup.changeScaleProperty().bind(changeScaleProperty);
 

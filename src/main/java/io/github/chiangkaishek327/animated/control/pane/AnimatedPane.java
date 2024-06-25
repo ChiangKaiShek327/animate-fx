@@ -5,7 +5,6 @@ import java.util.List;
 
 import io.github.chiangkaishek327.animated.animation.Animated;
 import io.github.chiangkaishek327.animated.control.pane.PaneAnimationGroup.PaneAnimationType;
-import io.github.chiangkaishek327.animated.util.AnimationGroupLoader;
 import io.github.chiangkaishek327.animated.control.pane.PaneAnimationGroup.PaneAnimationDirection;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -21,14 +20,12 @@ import javafx.util.Duration;
 
 public class AnimatedPane extends Pane implements Animated {
     protected List<BorderPane> vectorList = new ArrayList<>();
-    protected ObjectProperty<BorderPane> currectProperty = new SimpleObjectProperty<>();
+    protected ObjectProperty<BorderPane> currentProperty = new SimpleObjectProperty<>();
     protected IntegerProperty vectorIndexProperty = new SimpleIntegerProperty(0);
     protected ObjectProperty<PaneAnimationGroup> animationGroupProperty = new SimpleObjectProperty<>();
     protected DoubleProperty borderWidthProperty = new SimpleDoubleProperty(0);
-    private ObjectProperty<Duration> durationProperty = new SimpleObjectProperty<>(Duration.millis(100));
+    protected ObjectProperty<Duration> durationProperty = new SimpleObjectProperty<>(Duration.millis(100));
     protected ObjectProperty<PaneAnimationType> animationTypeProperty = new SimpleObjectProperty<>();
-    AnimationGroupLoader<AnimatedPane> animationGroupLoader = new AnimationGroupLoader<AnimatedPane>(
-            AnimatedPane.this);
 
     public AnimatedPane() {
         super();
@@ -55,24 +52,22 @@ public class AnimatedPane extends Pane implements Animated {
         update();
         updateNext();
         getNext().setCenter(node);
-        getNext().setVisible(true);
-
         animationGroupProperty.getValue().turn(direction, getCurrent(), getNext());
         toNext();
     }
 
-    private int getNextIndex() {
+    protected int getNextIndex() {
         if (vectorIndexProperty.get() == 0)
             return 1;
         else
             return 0;
     }
 
-    private void toNext() {
+    protected void toNext() {
         vectorIndexProperty.set(getNextIndex());
     }
 
-    private void initall() {
+    protected void initall() {
         widthProperty().addListener((ob, o, n) -> {
             update();
         });
@@ -90,7 +85,7 @@ public class AnimatedPane extends Pane implements Animated {
         });
         animationTypeProperty.addListener((ob, o, n) -> {
             try {
-                PaneAnimationGroup newAnimationGroup = ((PaneAnimationGroup) animationGroupLoader.load(n.clazz));
+                PaneAnimationGroup newAnimationGroup = n.clazz.getConstructor(AnimatedPane.class).newInstance(this);
                 animationGroupProperty.setValue(newAnimationGroup);
 
             } catch (Exception e) {
@@ -136,17 +131,17 @@ public class AnimatedPane extends Pane implements Animated {
         getNext().setPrefWidth(getWidth());
     }
 
-    private void initCurrect() {
+    protected void initCurrect() {
 
-        currectProperty.set(vectorList.get(vectorIndexProperty.get()));
+        currentProperty.set(vectorList.get(vectorIndexProperty.get()));
         getCurrent().setVisible(true);
     }
 
-    private BorderPane getCurrent() {
+    protected BorderPane getCurrent() {
         return vectorList.get(vectorIndexProperty.get());
     }
 
-    private BorderPane getNext() {
+    protected BorderPane getNext() {
         return vectorList.get(getNextIndex());
 
     }
