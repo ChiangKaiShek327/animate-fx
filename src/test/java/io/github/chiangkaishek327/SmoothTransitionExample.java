@@ -3,27 +3,32 @@ package io.github.chiangkaishek327;
 import java.io.FileInputStream;
 import java.util.Random;
 
+import io.github.chiangkaishek327.animated.control.button.AnimatedButton;
 import io.github.chiangkaishek327.animated.control.label.AnimatedLabel;
 import io.github.chiangkaishek327.animated.control.pane.AnimatedPane;
+import io.github.chiangkaishek327.animated.control.pane.DragablePane;
 import io.github.chiangkaishek327.animated.control.pane.PaneAnimationGroup.PaneAnimationType;
 import io.github.chiangkaishek327.animated.control.tabpane.AnimatedTab;
 import io.github.chiangkaishek327.animated.control.tabpane.AnimatedTabPane;
-import io.github.chiangkaishek327.animated.control.tabpane.AnimatedTabPane.HeaderSide;
-import io.github.chiangkaishek327.animated.util.OtherUtil;
 import io.github.chiangkaishek327.animated.util.SVGLoader;
+import io.github.chiangkaishek327.animated.util.ValueTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -31,6 +36,10 @@ public class SmoothTransitionExample extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        starwt(primaryStage);
+    }
+
+    public void starwt(Stage primaryStage) throws Exception {
 
         AnimatedTabPane atp = new AnimatedTabPane();
         atp.setPrefHeight(500);
@@ -52,8 +61,6 @@ public class SmoothTransitionExample extends Application {
         FXMLLoader fxl = new FXMLLoader(SmoothTransitionExample.class.getResource("test.fxml"));
         fxl.setBuilderFactory(new JavaFXBuilderFactory());
         fxl.load();
-        BorderPane bpw = fxl.getRoot();
-
         FXMLLoader fxl1 = new FXMLLoader(App.class.getResource("test.fxml"));
         fxl1.setBuilderFactory(new JavaFXBuilderFactory());
         fxl1.load();
@@ -63,13 +70,46 @@ public class SmoothTransitionExample extends Application {
         atp.getTabs().addAll(at7, at5, at2, at3, at4, at);
         atp.setDuration(Duration.millis(100));
         atp.getContentPane().setAnimationType(PaneAnimationType.PAT_OAT);
-        at.setIcon(new Image(App.class.getResourceAsStream("example.png")));
+        ImageView iv = new ImageView(SVGLoader.loadSVGImage(App.class.getResource("write.svg")));
+        iv.setFitHeight(500);
+        iv.setLayoutX(800);
+        iv.setLayoutY(100);
+        AnchorPane acp = new AnchorPane(atp);
         AnimatedLabel label = new AnimatedLabel();
-        label.setPrefSize(300, 300);
+        label.setFont(new Font(30));
 
+        label.setLayoutY(50);
+        label.setDuration(Duration.millis(500));
+        label.getStyleClass().add("backg");
+        new Thread(() -> {
+            try {
+                String[] s = new String[] { "ice cream", "بوظة", "冰淇淋", "мороженое", "འཁྱགས་ཞོ", "आइसक्रीम",
+                        "ရေခဲမုန့်", "ไอศครีม" };
+                for (;;) {
+                    for (String string : s) {
+                        Thread.sleep(1000);
+                        Platform.runLater(() -> label.setText(string));
+
+                    }
+                    ;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                ;
+            }
+        }).start();
         label.setLayoutX(800);
-        primaryStage.setScene(new Scene(new AnchorPane(atp)));
+        DragablePane drp = new DragablePane();
+        drp.setPrefSize(300, 300);
+        acp.getChildren().addAll(new BorderPane(label), iv, drp);
+        acp.getStylesheets().add(App.class.getResource("test.css").toExternalForm());
+        primaryStage.setScene(new Scene(acp));
+        AnimatedPane aPa = new AnimatedPane();
+        aPa.show(new AnimatedButton("ewijjondwo"));
+        aPa.setLayoutX(1000);
+        acp.getChildren().add(aPa);
         primaryStage.show();
+
     }
 
     public static void a_() {

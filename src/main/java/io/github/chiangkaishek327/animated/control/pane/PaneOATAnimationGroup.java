@@ -1,14 +1,8 @@
 package io.github.chiangkaishek327.animated.control.pane;
 
-import io.github.chiangkaishek327.animated.util.DoSthTransition;
-import io.github.chiangkaishek327.animated.util.OtherUtil;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
-import javafx.animation.SequentialTransition;
-import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.layout.BorderPane;
 
 /**
  * Actually, I think this name is bad also
@@ -16,8 +10,8 @@ import javafx.scene.layout.BorderPane;
  * this can change the opacity of content
  */
 public class PaneOATAnimationGroup extends PaneTranslateAnimationGroup {
-    public PaneOATAnimationGroup(AnimatedPane a) {
-        super(a);
+    public PaneOATAnimationGroup() {
+
     }
 
     @Override

@@ -11,19 +11,9 @@ import javafx.util.Duration;
 public abstract class AnimationGroup<N extends Animated> {
 
     protected ObjectProperty<Duration> durationProperty = new SimpleObjectProperty<Duration>(Duration.millis(100));
-    protected ObjectProperty<N> nodeProperty = new SimpleObjectProperty<>();
     protected ReadOnlyObjectWrapper<N> roowNode = new ReadOnlyObjectWrapper<N>();
     protected ReadOnlyObjectProperty<N> roopNode = roowNode.getReadOnlyProperty();
     protected DoubleProperty changeScaleProperty = new SimpleDoubleProperty(3);
-
-    public AnimationGroup() {
-        roowNode.bind(nodeProperty);
-    }
-
-    public N getNode() {
-
-        return nodeProperty.getValue();
-    };
 
     public ReadOnlyObjectProperty<N> nodeProperty() {
 

@@ -1,12 +1,8 @@
 package io.github.chiangkaishek327.animated.control.tabpane;
 
 import java.io.Closeable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 import io.github.chiangkaishek327.animated.control.button.AnimatedButton;
-import io.github.chiangkaishek327.animated.util.OtherUtil;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -16,12 +12,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
-import javafx.css.CssMetaData;
 import javafx.css.PseudoClass;
-import javafx.css.Styleable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -31,7 +22,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 /**

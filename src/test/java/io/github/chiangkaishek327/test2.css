@@ -2,8 +2,8 @@
     -fx-background-color: #000;
 }
 
-.animated-tab-pane .animated-tab-pane-content {
-    -fx-background-color: #00f;
+.jcode-name {
+    -fx-fill: #00f;
 }
 
 .animated-tab-pane .animated-tab-pane-header {
@@ -20,14 +20,4 @@
 
 .backg {
     -fx-background-color: #999;
-}
-
-.dragable-pane {
-    -fx-background-color: #114514;
-
-}
-
-.dragable-pane :selected {
-    -fx-background-color: #00ff00;
-
 }

@@ -1,13 +1,10 @@
 package io.github.chiangkaishek327.animated.control.pane;
 
 import io.github.chiangkaishek327.animated.animation.AnimationGroup;
-import io.github.chiangkaishek327.animated.control.button.ButtonAnimationGroup;
 import io.github.chiangkaishek327.animated.util.OtherUtil;
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
-import javafx.scene.layout.BorderPane;
 
 /**
  * PaneAnimationGroup
@@ -28,18 +25,43 @@ public abstract class PaneAnimationGroup extends AnimationGroup<AnimatedPane> {
         }
     }
 
-    private DoubleProperty borderWidthProperty = new SimpleDoubleProperty(0);
+    private DoubleProperty borderWidth = new SimpleDoubleProperty(0), height = new SimpleDoubleProperty(0),
+            width = new SimpleDoubleProperty();
 
     public double getBorderWidth() {
-        return borderWidthProperty.getValue();
+        return borderWidth.getValue();
     };
 
     public void setBorderWidth(double da) {
-        borderWidthProperty.setValue(da);
+        borderWidth.setValue(da);
     };
 
     public DoubleProperty borderWidthProperty() {
-        return borderWidthProperty;
+        return borderWidth;
+    };
+
+    public double getWidth() {
+        return width.getValue();
+    };
+
+    public void setWidth(double da) {
+        width.setValue(da);
+    };
+
+    public DoubleProperty widthProperty() {
+        return width;
+    };
+
+    public double getHeight() {
+        return height.getValue();
+    };
+
+    public void setHeight(double da) {
+        height.setValue(da);
+    };
+
+    public DoubleProperty heightProperty() {
+        return height;
     };
 
     protected void setVectorVisible(Node from, Node to) {

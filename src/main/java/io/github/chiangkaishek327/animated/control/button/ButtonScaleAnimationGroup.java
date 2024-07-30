@@ -7,7 +7,6 @@ public class ButtonScaleAnimationGroup extends ButtonAnimationGroup {
 
     public ButtonScaleAnimationGroup(AnimatedButton node) {
         setChangeScale(1.2);
-        nodeProperty.setValue(node);
         for (ScaleTransition st : new ScaleTransition[] { tobig, tosmall }) {
             st.setNode(node);
             st.durationProperty().bind(durationProperty());

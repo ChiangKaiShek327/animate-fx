@@ -15,8 +15,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 /**
@@ -112,8 +110,6 @@ public class AnimatedTabPane extends BorderPane implements Animated {
     }
 
     protected void load(AnimatedTab tab) {
-        animatedPane.update();
-        animatedPane.updateNext();
         if (tabs.contains(tab)) {
             int indexNext = tabs.indexOf(tab);
             PaneAnimationDirection pad;

@@ -1,24 +1,34 @@
 package io.github.chiangkaishek327.animated.util;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
+import java.net.URL;
 import java.awt.image.BufferedImage;
-import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.ImageTranscoder;
-import org.apache.batik.util.XMLResourceDescriptor;
-import org.w3c.dom.Document;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
-import javafx.scene.image.WritableImage;
 
 public class SVGLoader {
 
+    public static Image loadSVGImage(String url) throws IOException, TranscoderException {
+        return loadSVGImage(new URL(url));
+    }
+
+    public static Image loadSVGImage(URL url) throws IOException, TranscoderException {
+        return loadSVGImage(url.openStream());
+    }
+
+    /**
+     * 
+     * @param inputStream inputStream what has svg file content
+     * @return
+     * @throws IOException
+     * @throws TranscoderException
+     */
     public static Image loadSVGImage(InputStream inputStream) throws IOException, TranscoderException {
         BufferedImageTranscoder trans = new BufferedImageTranscoder();
         trans.createImage(100, 100);

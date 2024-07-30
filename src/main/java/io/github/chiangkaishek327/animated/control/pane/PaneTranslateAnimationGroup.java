@@ -1,18 +1,10 @@
 package io.github.chiangkaishek327.animated.control.pane;
 
-import io.github.chiangkaishek327.animated.util.DoSthTransition;
-import io.github.chiangkaishek327.animated.util.OtherUtil;
 import javafx.animation.ParallelTransition;
-import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.layout.BorderPane;
 
 public class PaneTranslateAnimationGroup extends PaneAnimationGroup {
-    public PaneTranslateAnimationGroup(AnimatedPane a) {
-        nodeProperty.set(a);
-    }
 
     @Override
     public void turn(PaneAnimationDirection direction, Node from, Node to) {
@@ -29,8 +21,8 @@ public class PaneTranslateAnimationGroup extends PaneAnimationGroup {
         double fromy = 0;
         double tox = 0;
         double toy = 0;
-        double nodeheight = getNode().getHeight();
-        double nodewidth = getNode().getWidth();
+        double nodeheight = getHeight();
+        double nodewidth = getWidth();
         double brdwdt = getBorderWidth();
         double topbrd = -nodeheight - brdwdt;
         double btmbrd = nodeheight + brdwdt;

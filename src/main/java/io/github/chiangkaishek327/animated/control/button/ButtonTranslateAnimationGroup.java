@@ -9,7 +9,6 @@ public class ButtonTranslateAnimationGroup extends ButtonAnimationGroup {
 
     public ButtonTranslateAnimationGroup(AnimatedButton node) {
         setChangeScale(3);
-        nodeProperty.setValue(node);
         for (TranslateTransition st : new TranslateTransition[] { up, down }) {
             st.setNode(node);
             st.durationProperty().bind(durationProperty());
